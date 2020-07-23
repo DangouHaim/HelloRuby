@@ -7,7 +7,7 @@
 You must have latest Ruby installed on your OS
 
 ### Dependencies
-```console
+```
 nokogiri
 thread
 concurrent-ruby
