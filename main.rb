@@ -1,4 +1,4 @@
-load 'networkrepository.rb'
+load 'dal/network_repository.rb'
 
 require 'rubygems'
 require 'thread/pool'

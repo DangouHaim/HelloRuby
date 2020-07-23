@@ -1,5 +1,5 @@
-load 'readonlynetworkrepository.rb'
-load 'context.rb'
+load 'dal/readonly_network_repository.rb'
+load 'dal/context.rb'
 
 require 'net/http'
 require 'digest/sha1'
