@@ -7,9 +7,11 @@
 You must have latest Ruby installed on your OS
 
 ### Dependencies
+'''
 - ![#efefef](nokogiri=+) `#efefef`
-thread,
+'thread',
 concurrent-ruby
+'''
 
 ### Installing
 
