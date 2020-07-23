@@ -45,7 +45,7 @@ class Main
             @repository.all().each() do |page|
 
                 call = Proc.new do
-                    res = @repository.get(page, [ "//div[@class='content']/h3" ])
+                    @repository.get(page, [ "//div[@class='content']/h3" ])
                 end
 
                 res = elapsed(call)
