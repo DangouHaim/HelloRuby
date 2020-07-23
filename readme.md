@@ -8,7 +8,7 @@ You must have latest Ruby installed on your OS
 
 ### Dependencies
 '''
-- ![#efefef](nokogiri=+) `#efefef`
+- ![#efefef] `nokogiri`
 'thread',
 concurrent-ruby
 '''
