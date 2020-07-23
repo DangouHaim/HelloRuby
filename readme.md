@@ -18,4 +18,4 @@ You must have latest Ruby installed on your OS
 #### Run `bundler install` to prepare gems
 
 ### Run
-Use `ruby main.rb to run`
+Use `ruby main.rb` to run
