@@ -24,32 +24,50 @@ module DAL
         attr_writer :pages
 
         def initialize(source_uri, cached = false)
+            puts ">> #{self.class} : #{__method__}"
+
             @context = context
             @cached = cached
             @source = source_uri.to_s()
 
             # Method caching
             @cache = Concurrent::Hash.new
+
+            puts "<< #{self.class} : #{__method__}"
         end
 
         # Interface part
         public
 
         def get(uri, conditions)
-            if @cached
-                # Caching html parsing to not repeat same operations
-                hash = Digest::SHA1.hexdigest(uri + conditions.sort().to_s())
-                return @cache[hash] ||= get_page(uri, conditions)
-            else
-                return get_page(uri, conditions)
+            puts ">> #{self.class} : #{__method__} (#{uri}, #{conditions})"
+
+            begin
+
+                if @cached
+                    # Caching html parsing to not repeat same operations
+                    hash = Digest::SHA1.hexdigest(uri + conditions.sort().to_s())
+                    return @cache[hash] ||= get_page(uri, conditions)
+                else
+                    return get_page(uri, conditions)
+                end
+
+            rescue => exception
+                p exception
+            ensure
+                puts "<< #{self.class} : #{__method__}"
             end
         end
 
         def any?()
+            puts ">> #{self.class} : #{__method__}"
+            puts "<< #{self.class} : #{__method__}"
             return !@pages.empty?()
         end
 
         def all()
+            puts ">> #{self.class} : #{__method__}"
+            puts "<< #{self.class} : #{__method__}"
             return @pages
         end
         # Interface part end

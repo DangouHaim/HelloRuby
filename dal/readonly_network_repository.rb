@@ -1,7 +1,12 @@
+load 'dal/interface_base.rb'
+
 # Like interface
 module DAL
 
     module ReadOnlyNetworkRepository
+
+        # Use interface basics
+        include InterfaceBase
 
         # uri - url as string
         # conditions - array ( [] )
@@ -18,13 +23,6 @@ module DAL
         # Checks if any relative page urls is exists
         def any?()
             not_implemented()    
-        end
-        
-        # To not override or access from the outside, excluding inheritance
-        private
-        protected
-        def not_implemented()
-            raise("Not implemented")
         end
 
     end
