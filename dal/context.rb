@@ -1,16 +1,14 @@
 module DAL
     class Context
         
-        attr_reader :context
-        attr_reader :condition
+        attr_reader :context, :condition
 
         private
-        attr_writer :context
-        attr_writer :condition
+        attr_writer :context, :condition
 
         def initialize(context, condition)
-            @context = context
-            @condition = condition
+            self.context = context
+            self.condition = condition
         end
 
     end

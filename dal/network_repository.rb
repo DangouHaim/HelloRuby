@@ -7,44 +7,60 @@ require 'nokogiri'
 
 module DAL
 
+    # source - target site url
+    # context - category page with target pages inside
+    # pages - array of pages url parsed by context
+    # cached - (bool) use or not to use method call caching
+    
     class NetworkRepository
 
         # To implement interface
         include ReadOnlyNetworkRepository
         
         # Context for collecting urls (for all() and any?() methods)
-        attr_reader :context
-        attr_reader :cached
-        attr_reader :source
-        attr_reader :pages
+        attr_reader :context, :cached, :source, :pages
 
         private
-        attr_writer :cached
-        attr_writer :source
-        attr_writer :pages
+        attr_writer :cached, :source, :pages
+        
+        @cache = nil
 
         def initialize(source_uri, cached = false)
             puts ">> #{self.class} : #{__method__}"
 
-            @context = context
-            @cached = cached
-            @source = source_uri.to_s()
+            self.cached = cached
+            self.source = source_uri.to_s()
 
             # Method caching
-            @cache = Concurrent::Hash.new
+            if self.cached
+                @cache = Concurrent::Hash.new
+            end
 
             puts "<< #{self.class} : #{__method__}"
         end
 
-        # Interface part
         public
 
+        def context=(context)
+            @context = context
+            
+            if(self.cached)
+                # Caching html parsing to not repeat same operations
+                # with same html
+                hash = Digest::SHA1.hexdigest(self.source + self.context.to_s())
+                self.pages = @cache[hash] ||= prepare_pages_from_source(self.source, self.context)
+            else
+                self.pages = prepare_pages_from_source(self.source, self.context)
+            end
+        end
+
+        # Interface part
         def get(uri, conditions)
             puts ">> #{self.class} : #{__method__} (#{uri}, #{conditions})"
 
             begin
 
-                if @cached
+                if self.cached
                     # Caching html parsing to not repeat same operations
                     hash = Digest::SHA1.hexdigest(uri + conditions.sort().to_s())
                     return @cache[hash] ||= get_page(uri, conditions)
@@ -62,28 +78,15 @@ module DAL
         def any?()
             puts ">> #{self.class} : #{__method__}"
             puts "<< #{self.class} : #{__method__}"
-            return !@pages.empty?()
+            return !self.pages.empty?()
         end
 
         def all()
             puts ">> #{self.class} : #{__method__}"
             puts "<< #{self.class} : #{__method__}"
-            return @pages
+            return self.pages
         end
         # Interface part end
-
-        def context=(context)
-            @context = context
-            
-            if(@cached)
-                # Caching html parsing to not repeat same operations
-                # with same html
-                hash = Digest::SHA1.hexdigest(@source + @context.to_s())
-                @pages = @cache[hash] ||= prepare_pages_from_source(@source, @context)
-            else
-                @pages = prepare_pages_from_source(@source, @context)
-            end
-        end
 
         private
 
@@ -113,12 +116,12 @@ module DAL
         def get_page(uri, conditions)
             uri = uri.to_s()
             
-            uri = URI::join(@source, uri).to_s if !uri.include?(@source)
+            uri = URI::join(self.source, uri).to_s if !uri.include?(self.source)
             uri = URI.parse(uri)
 
             html = Net::HTTP.get(uri)
 
-            if @cached
+            if self.cached
                 # Caching html parsing to not repeat same operations
                 # with same html
                 hash = Digest::SHA1.hexdigest(html + conditions.sort().to_s())
